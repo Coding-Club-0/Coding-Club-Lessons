@@ -1,34 +1,81 @@
 // Declare global variables here
+class Bird {
+    constructor(x, y, size) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
 
+        this.vel = 0;
+        this.acc = 1;
+
+    }
+
+    display() {
+        fill(255, 255, 0);
+        ellipse(this.x, this.y, this.size, this.size);
+    }
+
+    update() {
+        this.vel += this.acc;
+        this.y += this.vel;
+
+        if (this.y >= height - this.size / 2) {
+            this.y = height - this.size / 2;
+            this.vel = 0;
+        }
+    }
+
+    flap() {
+        this.vel = -20;
+    }
+}
+
+class Pipe {
+    constructor(x, yGap, gapSize) {
+        this.x = x;
+        this.yGap = yGap;
+        this.gapSize = gapSize;
+    }
+
+    display() {
+        fill(0,255,0);
+        rect(this.x, height-this.yGap, 100, this.yGap);
+        rect(this.x, 0, 100, this.yGap-this.gapSize);
+    }
+}
+
+var bird;   
+var pipes = [];
 // Initialize global variables here
-var x, y, w, h;
 function setup() {
     canvas = createCanvas(document.body.clientWidth, window.innerHeight);
     canvas.position(0, 0);
     canvas.class("p5canvas");
 
-    x = width/2;
-    y = height/2;
-    w = 300;
-    h = 300;
+    bird = new Bird(width/2, height/2, 50);
+    pipes.push(new Pipe(3*width/4, height/2, 500));
+    
 }
 
-// Draw scene here
+// Draw scene here  
 function draw() {
-    background(255, 0, 0);
-    if (x < width - w ) {
-        x = x + 5;
+    background(0, 255, 255);
+    bird.update();
+    bird.display();
+
+    for (var i = 0; i < pipes.length; i++) {
+        pipes[i].display();
     }
-    y -= 1;
-    // x ++;
-    // x += 1;
+}
 
-    fill(0, 0, 0);
-    stroke(255, 255, 0);
-    strokeWeight(30);
-    ellipse(x, y, w, h);
+function mousePressed() {
+    bird.flap();
+}
 
-    // rect(x, y, w, h);
+function keyPressed() {
+    if (keyCode === 32) {
+        bird.flap();
+    }
 }
 
 function windowResized() {
