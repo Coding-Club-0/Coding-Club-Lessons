@@ -37,10 +37,22 @@ class Pipe {
         this.gapSize = gapSize;
     }
 
+    update() {
+        this.x -= 5;
+    }
+
+    collide(player) {
+        let radius = player.size/2;
+        if (player.x+radius >= this.x && player.x-radius <= this.x+100 && 
+            (player.y+radius >= height-(this.yGap-this.gapSize/2) || player.y-radius <= this.yGap-this.gapSize/2)) {
+            print(true);
+        }
+    }
+
     display() {
         fill(0,255,0);
-        rect(this.x, height-this.yGap, 100, this.yGap);
-        rect(this.x, 0, 100, this.yGap-this.gapSize);
+        rect(this.x, height-(this.yGap-this.gapSize/2), 100, this.yGap);
+        rect(this.x, 0, 100, this.yGap-this.gapSize/2);
     }
 }
 
@@ -53,7 +65,7 @@ function setup() {
     canvas.class("p5canvas");
 
     bird = new Bird(width/2, height/2, 50);
-    pipes.push(new Pipe(3*width/4, height/2, 500));
+    pipes.push(new Pipe(3*width/4, height/2, 200));
     
 }
 
@@ -64,7 +76,9 @@ function draw() {
     bird.display();
 
     for (var i = 0; i < pipes.length; i++) {
+        pipes[i].update();  
         pipes[i].display();
+        pipes[i].collide(bird);
     }
 }
 
