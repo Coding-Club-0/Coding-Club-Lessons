@@ -26,7 +26,7 @@ class Bird {
     }
 
     flap() {
-        this.vel = -10;
+        this.vel = -15;
     }
 }
 
@@ -44,7 +44,7 @@ class Pipe {
     collide(player) {
         let radius = player.size/2;
         if (player.x+radius >= this.x && player.x-radius <= this.x+100 && 
-            (player.y+radius >= height-(this.yGap-this.gapSize/2) || player.y-radius <= this.yGap-this.gapSize/2)) {
+            (player.y+radius >= height-this.yGap+this.gapSize/2 || player.y-radius <= height-this.yGap-this.gapSize/2)) {
             return true;
         }
         return false;
@@ -52,14 +52,17 @@ class Pipe {
 
     display() {
         fill(0,255,0);
-        rect(this.x, height-(this.yGap-this.gapSize/2), 100, this.yGap);
-        rect(this.x, 0, 100, this.yGap-this.gapSize/2);
+        // rect(this.x, height-(this.yGap-this.gapSize/2), 100, this.yGap);
+        // rect(this.x, 0, 100, this.yGap-this.gapSize/2);
+        rect (this.x, height-this.yGap+this.gapSize/2, 100, this.yGap);
+        rect (this.x, 0, 100, height-this.yGap-this.gapSize/2);
     }
 }
 
 var bird;   
 var pipes = [];
 var collided;
+var timer;
 // Initialize global variables here
 function setup() {
     canvas = createCanvas(document.body.clientWidth, window.innerHeight);
@@ -67,15 +70,14 @@ function setup() {
     canvas.class("p5canvas");
 
     bird = new Bird(width/2, height/2, 50);
-    pipes.push(new Pipe(width, height/2, 200));
+    pipes.push(new Pipe(width, random(height/4, 3*height/4), 200));
     collided = false;
+    timer = 0;
 }
 
 // Draw scene here  
 function draw() {
     background(0, 255, 255);
-    bird.update();
-    bird.display();
 
     // for (var i = 0; i < pipes.length; i++) {
     for (let i = pipes.length-1; i >= 0; i--) {
@@ -90,21 +92,37 @@ function draw() {
             pipes.splice(i, 1);
         }
     }
-
-    if (frameCount % 100 === 0) {
-        pipes.push(new Pipe(width, height/2, 200));
+    
+    timer ++;
+    if (timer % 100 === 0) {
+        pipes.push(new Pipe(width, random(height/4, 3*height/4), 200));
     }
+
+    bird.update();
+    bird.display();
+}
+
+function reset() {
+    bird = new Bird(width/2, height/2, 50);
+    pipes = [new Pipe(width, random(height/4, 3*height/4), 200)];
+    collided = false;
+    timer = 0;
 }
 
 function mousePressed() {
     if (!collided) {
         bird.flap();
+    } else {
+        reset();
     }
 }
 
 function keyPressed() {
     if (keyCode === 32 && !collided) {
         bird.flap();
+    }
+    if (collided) {
+        reset();
     }
 }
 
