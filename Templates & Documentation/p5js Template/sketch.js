@@ -45,8 +45,9 @@ class Pipe {
         let radius = player.size/2;
         if (player.x+radius >= this.x && player.x-radius <= this.x+100 && 
             (player.y+radius >= height-(this.yGap-this.gapSize/2) || player.y-radius <= this.yGap-this.gapSize/2)) {
-            print(true);
+            return true;
         }
+        return false;
     }
 
     display() {
@@ -58,6 +59,7 @@ class Pipe {
 
 var bird;   
 var pipes = [];
+var collided;
 // Initialize global variables here
 function setup() {
     canvas = createCanvas(document.body.clientWidth, window.innerHeight);
@@ -66,19 +68,25 @@ function setup() {
 
     bird = new Bird(width/2, height/2, 50);
     pipes.push(new Pipe(3*width/4, height/2, 200));
-    
+    collided = false;
 }
 
 // Draw scene here  
 function draw() {
     background(0, 255, 255);
-    bird.update();
+    if (!collided) {
+        bird.update();
+    }
     bird.display();
 
     for (var i = 0; i < pipes.length; i++) {
-        pipes[i].update();  
+        if (!collided) {
+            pipes[i].update();
+            if(pipes[i].collide(bird)) {
+                collided = true;
+            }
+        }  
         pipes[i].display();
-        pipes[i].collide(bird);
     }
 }
 
