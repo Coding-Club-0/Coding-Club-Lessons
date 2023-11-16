@@ -26,7 +26,7 @@ class Bird {
     }
 
     flap() {
-        this.vel = -20;
+        this.vel = -10;
     }
 }
 
@@ -67,19 +67,18 @@ function setup() {
     canvas.class("p5canvas");
 
     bird = new Bird(width/2, height/2, 50);
-    pipes.push(new Pipe(3*width/4, height/2, 200));
+    pipes.push(new Pipe(width, height/2, 200));
     collided = false;
 }
 
 // Draw scene here  
 function draw() {
     background(0, 255, 255);
-    if (!collided) {
-        bird.update();
-    }
+    bird.update();
     bird.display();
 
-    for (var i = 0; i < pipes.length; i++) {
+    // for (var i = 0; i < pipes.length; i++) {
+    for (let i = pipes.length-1; i >= 0; i--) {
         if (!collided) {
             pipes[i].update();
             if(pipes[i].collide(bird)) {
@@ -87,15 +86,24 @@ function draw() {
             }
         }  
         pipes[i].display();
+        if (pipes[i].x < -100) {
+            pipes.splice(i, 1);
+        }
+    }
+
+    if (frameCount % 100 === 0) {
+        pipes.push(new Pipe(width, height/2, 200));
     }
 }
 
 function mousePressed() {
-    bird.flap();
+    if (!collided) {
+        bird.flap();
+    }
 }
 
 function keyPressed() {
-    if (keyCode === 32) {
+    if (keyCode === 32 && !collided) {
         bird.flap();
     }
 }
